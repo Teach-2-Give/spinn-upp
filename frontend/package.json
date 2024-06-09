@@ -13,6 +13,6 @@
         "typescript": "^4.0.0"
     },
     "dependencies": {
-        "lite-server": "^2.5.4"
+        "lite-server": "^2.6.1"
     }
 }
