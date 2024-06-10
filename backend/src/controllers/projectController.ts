@@ -1,7 +1,7 @@
 // src/controllers/projectController.ts
 import { Request, Response } from 'express';
 import sql from 'mssql';
-import pool from '../config/dbConfig';
+import { pool } from '../config/dbConfig';
 import { Project } from '../interfaces/projectInterface';
 import { RequestWithUser } from '../interfaces/RequestWithUser';
 

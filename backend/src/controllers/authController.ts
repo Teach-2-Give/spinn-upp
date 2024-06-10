@@ -2,55 +2,88 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import sql from 'mssql';
-import pool from '../config/dbConfig';
+import { pool, connectPool } from '../config/dbConfig';
 import { User } from '../interfaces/userInterface';
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+// Register a new user
+export const register = async (req: Request, res: Response): Promise<Response> => {
   try {
+    console.log('Register Request Body:', req.body);
+    const { username, password, email, role }: User = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    await connectPool();
+
+    // Check if a user with the provided email already exists
+    const checkUserRequest = pool.request();
+    const checkUserResult = await checkUserRequest
+      .input('Email', sql.NVarChar, email)
+      .query('SELECT * FROM Users WHERE Email = @Email');
+
+    if (checkUserResult.recordset.length > 0) {
+      return res.status(400).send({ message: 'A user with this email already exists' });
+    }
+
+    const request = pool.request();
+    await request
+      .input('Username', sql.NVarChar, username)
+      .input('PasswordHash', sql.NVarChar, passwordHash)
+      .input('Email', sql.NVarChar, email)
+      .input('Role', sql.NVarChar, role)
+      .query('INSERT INTO Users (Username, PasswordHash, Email, Role) VALUES (@Username, @PasswordHash, @Email, @Role)');
+
+    return res.status(201).send({ message: 'User registered successfully' });
+  } catch (err) {
+    console.error('Error during registration:', err);
+    return res.status(500).send({ message: (err as Error).message });
+  }
+};
+
+// Login a user
+// Login a user
+export const login = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    console.log('Login Request Body:', req.body);
     const { username, password } = req.body;
 
-    const result = await pool.request()
+    await connectPool();
+
+    const request = pool.request();
+    const result = await request
       .input('Username', sql.NVarChar, username)
       .query('SELECT * FROM Users WHERE Username = @Username');
 
     if (result.recordset.length === 0) {
-      res.status(400).send('Invalid username or password.');
-      return;
+      console.log('No user found with the provided username');
+      return res.status(400).send({ message: 'Invalid username or password.' });
     }
 
-    const user: User = result.recordset[0];
+    // Map the database result to the User interface
+    const user: User = {
+      ...result.recordset[0],
+      passwordHash: result.recordset[0].PasswordHash,
+    };
 
-    const validPassword = await bcrypt.compare(password, user.passwordHash);
+    console.log('User found:', user);
+
+    if (!user.passwordHash) { // Change this line
+      console.log('User does not have a password hash');
+      return res.status(400).send({ message: 'Invalid username or password.' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.passwordHash); // And this line
     if (!validPassword) {
-      res.status(400).send('Invalid username or password.');
-      return;
+      console.log('Password does not match');
+      return res.status(400).send({ message: 'Invalid username or password.' });
     }
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET!, {
       expiresIn: '1h',
     });
 
-    res.status(200).send({ token });
+    return res.status(200).send({ token });
   } catch (err) {
-    res.status(500).send((err as Error).message);
-  }
-};
-
-export const register = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { username, password, email, role } = req.body;
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const result = await pool.request()
-      .input('Username', sql.NVarChar, username)
-      .input('PasswordHash', sql.NVarChar, hashedPassword)
-      .input('Email', sql.NVarChar, email)
-      .input('Role', sql.NVarChar, role)
-      .query('INSERT INTO Users (Username, PasswordHash, Email, Role) VALUES (@Username, @PasswordHash, @Email, @Role)');
-
-    res.status(201).send('User registered successfully');
-  } catch (err) {
-    res.status(500).send((err as Error).message);
+    console.error('Error during login:', err);
+    return res.status(500).send({ message: (err as Error).message });
   }
 };

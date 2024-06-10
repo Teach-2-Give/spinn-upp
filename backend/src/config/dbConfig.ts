@@ -8,6 +8,8 @@ const dbPassword = process.env.DB_PASSWORD || '';
 const dbServer = process.env.DB_SERVER || '';
 const dbName = process.env.DB_NAME || '';
 
+console.log('Database Configuration:', { dbUser, dbServer, dbName });
+
 if (!dbUser || !dbPassword || !dbServer || !dbName) {
   throw new Error('Database configuration is missing. Please set DB_USER, DB_PASSWORD, DB_SERVER, and DB_NAME in your environment variables.');
 }
@@ -18,17 +20,25 @@ const pool = new sql.ConnectionPool({
   server: dbServer,
   database: dbName,
   options: {
-    encrypt: false, // Use encryption
-    trustServerCertificate: true // Add this line to trust self-signed certificates
+    encrypt: false,
+    trustServerCertificate: true
   }
 });
 
-pool.connect()
-  .then(() => {
-    console.log('Connected to MSSQL');
-  })
-  .catch(err => {
-    console.error('Database connection failed:', err);
-  });
+pool.on('error', err => {
+  console.error('SQL Pool Error:', err);
+});
 
-export default pool;
+const connectPool = async () => {
+  try {
+    if (!pool.connected) {
+      await pool.connect();
+      console.log('Connected to MSSQL');
+    }
+  } catch (err) {
+    console.error('Database connection failed:', err);
+    throw err;
+  }
+};
+
+export { pool, connectPool };

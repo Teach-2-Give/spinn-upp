@@ -1,0 +1,39 @@
+@token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTc5NzkxMDksImV4cCI6MTcxNzk4MjcwOX0.3p3WgypVFUcWYRnilu3CzKZyP4W0za3coTMQ4BTJHXk"
+
+### Create a new project
+POST http://localhost:3000/api/projects
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Project 1",
+  "description": "Description for Project 1",
+  "status": "In Progress",
+  "assignedTo": 1
+}
+
+###
+
+### Get all projects
+GET http://localhost:3000/api/projects
+Authorization: Bearer {{token}}
+
+###
+
+### Update a project
+PUT http://localhost:3000/api/projects/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Updated Project 1",
+  "description": "Updated Description for Project 1",
+  "status": "Completed",
+  "assignedTo": 1
+}
+
+###
+
+### Delete a project
+DELETE http://localhost:3000/api/projects/1
+Authorization: Bearer {{token}}
