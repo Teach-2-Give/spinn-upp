@@ -1,9 +1,7 @@
-@token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTc5NzkxMDksImV4cCI6MTcxNzk4MjcwOX0.3p3WgypVFUcWYRnilu3CzKZyP4W0za3coTMQ4BTJHXk"
-
 ### Create a new project
 POST http://localhost:3000/api/projects
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTgwMjQ2OTcsImV4cCI6MTcxODAyODI5N30.2YYTpgM4dgLKyDfDqdE_h1abWebpLS4MN9YRZwVTCms
 
 {
   "name": "Project 1",
@@ -14,16 +12,16 @@ Authorization: Bearer {{token}}
 
 ###
 
-### Get all projects
-GET http://localhost:3000/api/projects
-Authorization: Bearer {{token}}
+### Get all users
+GET http://localhost:3000/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTgwMjQ2OTcsImV4cCI6MTcxODAyODI5N30.2YYTpgM4dgLKyDfDqdE_h1abWebpLS4MN9YRZwVTCms
 
 ###
 
 ### Update a project
 PUT http://localhost:3000/api/projects/1
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTgwMjQ2OTcsImV4cCI6MTcxODAyODI5N30.2YYTpgM4dgLKyDfDqdE_h1abWebpLS4MN9YRZwVTCms
 
 {
   "name": "Updated Project 1",
@@ -36,4 +34,4 @@ Authorization: Bearer {{token}}
 
 ### Delete a project
 DELETE http://localhost:3000/api/projects/1
-Authorization: Bearer {{token}}
+Authorization: Bearer

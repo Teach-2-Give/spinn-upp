@@ -16,6 +16,7 @@ const authMiddleware = (req: RequestWithUser, res: Response, next: NextFunction)
     req.user = decoded;
     next();
   } catch (err) {
+    console.error('JWT verification error:', err);
     res.status(400).send('Invalid token.');
   }
 };

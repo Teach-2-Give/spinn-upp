@@ -40,7 +40,6 @@ export const register = async (req: Request, res: Response): Promise<Response> =
 };
 
 // Login a user
-// Login a user
 export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
     console.log('Login Request Body:', req.body);
@@ -58,7 +57,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       return res.status(400).send({ message: 'Invalid username or password.' });
     }
 
-    // Map the database result to the User interface
+
     const user: User = {
       ...result.recordset[0],
       passwordHash: result.recordset[0].PasswordHash,
@@ -66,12 +65,12 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
     console.log('User found:', user);
 
-    if (!user.passwordHash) { // Change this line
+    if (!user.passwordHash) { 
       console.log('User does not have a password hash');
       return res.status(400).send({ message: 'Invalid username or password.' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.passwordHash); // And this line
+    const validPassword = await bcrypt.compare(password, user.passwordHash);
     if (!validPassword) {
       console.log('Password does not match');
       return res.status(400).send({ message: 'Invalid username or password.' });
