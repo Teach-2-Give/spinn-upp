@@ -40,23 +40,23 @@ export const register = async (req: Request, res: Response): Promise<Response> =
 };
 
 // Login a user
+// Login a user
 export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
     console.log('Login Request Body:', req.body);
-    const { username, password } = req.body;
+    const { email, password } = req.body; // Change this line to use email instead of username
 
     await connectPool();
 
     const request = pool.request();
     const result = await request
-      .input('Username', sql.NVarChar, username)
-      .query('SELECT * FROM Users WHERE Username = @Username');
+      .input('Email', sql.NVarChar, email) // Change this line to use email instead of username
+      .query('SELECT * FROM Users WHERE Email = @Email'); // Change this line to use email instead of username
 
     if (result.recordset.length === 0) {
-      console.log('No user found with the provided username');
-      return res.status(400).send({ message: 'Invalid username or password.' });
+      console.log('No user found with the provided email'); // Change this line to say email instead of username
+      return res.status(400).send({ message: 'Invalid email or password.' }); // Change this line to say email instead of username
     }
-
 
     const user: User = {
       ...result.recordset[0],
@@ -67,13 +67,13 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
     if (!user.passwordHash) { 
       console.log('User does not have a password hash');
-      return res.status(400).send({ message: 'Invalid username or password.' });
+      return res.status(400).send({ message: 'Invalid email or password.' }); // Change this line to say email instead of username
     }
 
     const validPassword = await bcrypt.compare(password, user.passwordHash);
     if (!validPassword) {
       console.log('Password does not match');
-      return res.status(400).send({ message: 'Invalid username or password.' });
+      return res.status(400).send({ message: 'Invalid email or password.' }); // Change this line to say email instead of username
     }
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET!, {

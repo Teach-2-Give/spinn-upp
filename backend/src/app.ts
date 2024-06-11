@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors'; // Import cors
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes';
 import projectRoutes from './routes/projectRoutes';
@@ -9,6 +10,9 @@ import errorHandler from './middlewares/errorHandler';
 dotenv.config();
 
 const app = express();
+
+// Use cors middleware and allow all origins
+app.use(cors());
 
 // Middleware to parse JSON requests
 app.use(express.json());

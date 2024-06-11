@@ -72,5 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
             newProjectForm.classList.remove('show');
             overlay.classList.remove('show');
         });
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                
+                localStorage.removeItem('token');
+
+                
+                // Navigate back to the previous page
+                window.history.back();
+            });
+    }
     }
 });
